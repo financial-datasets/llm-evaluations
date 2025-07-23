@@ -24,56 +24,63 @@ class RedFlagDetectionDatasetBuilder:
     
     def __init__(self, fd_client: Optional[FinancialDatasetsClient] = None):
         self._fd_client = fd_client or FinancialDatasetsClient()
-        self._filter_strategies: list[FilterStrategy] = []
-        self._limit = 5
+        self._filter_strategies: list[tuple[FilterStrategy, int]] = []
+        self._default_limit = 5
         self._period = "ttm"
     
-    def with_financial_health_issues(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_financial_health_issues(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add financial health issues filter."""
-        self._filter_strategies.append(FinancialHealthIssuesFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((FinancialHealthIssuesFilter(), actual_limit))
         return self
     
-    def with_declining_profitability(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_declining_profitability(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add declining profitability filter."""
-        self._filter_strategies.append(DecliningProfitabilityFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((DecliningProfitabilityFilter(), actual_limit))
         return self
     
-    def with_earnings_decline(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_earnings_decline(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add earnings decline filter."""
-        self._filter_strategies.append(EarningsDeclineFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((EarningsDeclineFilter(), actual_limit))
         return self
     
-    def with_bankruptcy_risk(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_bankruptcy_risk(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add bankruptcy risk filter."""
-        self._filter_strategies.append(BankruptcyRiskFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((BankruptcyRiskFilter(), actual_limit))
         return self
     
-    def with_inefficient_operations(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_inefficient_operations(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add inefficient operations filter."""
-        self._filter_strategies.append(InefficientOperationsFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((InefficientOperationsFilter(), actual_limit))
         return self
     
-    def with_green_flags(self) -> 'RedFlagDetectionDatasetBuilder':
+    def with_green_flags(self, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add green flag filter."""
-        self._filter_strategies.append(GreenFlagFilter())
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((GreenFlagFilter(), actual_limit))
         return self
     
-    def with_all_red_flags(self) -> 'RedFlagDetectionDatasetBuilder':
-        """Add all red flag filters."""
-        return (self.with_financial_health_issues()
-                   .with_declining_profitability()
-                   .with_earnings_decline()
-                   .with_bankruptcy_risk()
-                   .with_inefficient_operations())
+    def with_all_red_flags(self, limit_per_filter: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
+        """Add all red flag filters with optional limit per filter."""
+        return (self.with_financial_health_issues(limit_per_filter)
+                   .with_declining_profitability(limit_per_filter)
+                   .with_earnings_decline(limit_per_filter)
+                   .with_bankruptcy_risk(limit_per_filter)
+                   .with_inefficient_operations(limit_per_filter))
     
-    def with_custom_filter(self, filter_strategy: FilterStrategy) -> 'RedFlagDetectionDatasetBuilder':
+    def with_custom_filter(self, filter_strategy: FilterStrategy, limit: Optional[int] = None) -> 'RedFlagDetectionDatasetBuilder':
         """Add a custom filter strategy."""
-        self._filter_strategies.append(filter_strategy)
+        actual_limit = limit if limit is not None else self._default_limit
+        self._filter_strategies.append((filter_strategy, actual_limit))
         return self
     
     def with_limit(self, limit: int) -> 'RedFlagDetectionDatasetBuilder':
-        """Set the limit for search results per filter."""
-        self._limit = limit
+        """Set the default limit for filters that don't specify their own limit."""
+        self._default_limit = limit
         return self
     
     def with_period(self, period: str) -> 'RedFlagDetectionDatasetBuilder':
@@ -87,13 +94,14 @@ class RedFlagDetectionDatasetBuilder:
             raise ValueError("At least one filter strategy must be added before building the dataset")
         
         all_companies = []
-        for strategy in self._filter_strategies:
+        for strategy, limit in self._filter_strategies:
             companies = self._fd_client.search(
                 filters=strategy.get_filters(),
                 label=strategy.get_label(),
-                limit=self._limit,
+                limit=limit,
                 period=self._period
             )
+            print(f"Found {len(companies)} companies with label {strategy.get_label()} (limit: {limit})")
             all_companies.extend(companies)
         
         return RedFlagDetectionDataset(all_companies) 

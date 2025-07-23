@@ -13,12 +13,12 @@ class GreenFlagFilter(FilterStrategy):
     
     def get_filters(self) -> list[dict[str, str]]:
         return [
-            {"field": "net_income", "operator": "gte", "value": 1000000000},
-            {"field": "total_debt", "operator": "lt", "value": 500000000},
-            {"field": "return_on_equity", "operator": "gte", "value": 15},
-            {"field": "current_ratio", "operator": "gte", "value": 1.5},
-            {"field": "free_cash_flow", "operator": "gte", "value": 500000000}
+            { "field": "net_income", "operator": "gte", "value": 250000000 },
+            { "field": "total_debt", "operator": "lt", "value": 2000000000 },
+            { "field": "current_ratio", "operator": "gte", "value": 1.2 },
+            { "field": "free_cash_flow", "operator": "gte", "value": 100000000 }
         ]
+
     
     def get_label(self) -> str:
         return "Green Flag" 

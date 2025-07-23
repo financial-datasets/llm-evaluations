@@ -43,28 +43,11 @@ from .filters import (
     InefficientOperationsFilter,
     GreenFlagFilter,
 )
-
-
-def create_default_dataset() -> RedFlagDetectionDataset:
-    """Create a dataset with all red flags and green flags using default settings."""
-    return (RedFlagDetectionDatasetBuilder()
-            .with_all_red_flags()
-            .with_green_flags()
-            .build())
-
-
-def create_red_flags_only_dataset() -> RedFlagDetectionDataset:
-    """Create a dataset with only red flag companies."""
-    return (RedFlagDetectionDatasetBuilder()
-            .with_all_red_flags()
-            .build())
-
-
-def create_green_flags_only_dataset() -> RedFlagDetectionDataset:
-    """Create a dataset with only green flag companies."""
-    return (RedFlagDetectionDatasetBuilder()
-            .with_green_flags()
-            .build())
+from .cache import (
+    create_default_dataset,
+    create_red_flags_only_dataset,
+    create_green_flags_only_dataset,
+)
 
 
 __all__ = [
@@ -83,7 +66,7 @@ __all__ = [
     "InefficientOperationsFilter",
     "GreenFlagFilter",
     
-    # Convenience functions
+    # Convenience functions (from cache module)
     "create_default_dataset",
     "create_red_flags_only_dataset", 
     "create_green_flags_only_dataset",

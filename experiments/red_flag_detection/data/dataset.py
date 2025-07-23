@@ -5,6 +5,10 @@ This module provides the RedFlagDetectionDataset class for organizing and access
 financial data with different flag classifications.
 """
 
+import json
+import os
+from typing import Optional
+
 
 class RedFlagDetectionDataset:
     """Dataset container for red flag detection data."""
@@ -34,4 +38,44 @@ class RedFlagDetectionDataset:
     
     def labels(self) -> set[str]:
         """Get all unique labels in the dataset."""
-        return {c["label"] for c in self._companies} 
+        return {c["label"] for c in self._companies}
+    
+    def save_to_json(self, filepath: str) -> None:
+        """Save the dataset to a JSON file."""
+        # Ensure directory exists (only if filepath contains a directory)
+        directory = os.path.dirname(filepath)
+        if directory:  # Only create directory if filepath contains a path
+            os.makedirs(directory, exist_ok=True)
+        
+        data = {
+            'companies': self._companies,
+            'metadata': {
+                'total_companies': self.size(),
+                'labels': list(self.labels()),
+                'red_flag_count': len(self.get_red_flag_companies()),
+                'green_flag_count': len(self.get_green_flag_companies())
+            }
+        }
+        
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        print(f"Dataset saved to {filepath}")
+    
+    @classmethod
+    def load_from_json(cls, filepath: str) -> Optional['RedFlagDetectionDataset']:
+        """Load dataset from a JSON file. Returns None if file doesn't exist."""
+        if not os.path.exists(filepath):
+            return None
+        
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            
+            companies = data.get('companies', [])
+            print(f"Dataset loaded from {filepath} ({len(companies)} companies)")
+            return cls(companies)
+        
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"Error loading dataset from {filepath}: {e}")
+            return None 
