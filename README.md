@@ -1,8 +1,5 @@
 # LLM Evaluations
-
-A hands-on repository for evaluating Large Language Models (LLMs) on various financial research tasks. 
-
-This project provides tools and methodologies to assess LLM performance, accuracy, and reliability in financial analysis and research contexts.
+This project provides code to assess LLM performance, accuracy, and reliability on various financial research tasks. 
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/findatasets?style=social)](https://twitter.com/findatasets)
 
