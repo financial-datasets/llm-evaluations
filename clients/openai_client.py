@@ -1,6 +1,5 @@
 import openai
 from openai import OpenAI
-from typing import List, Dict, Any, Optional
 import os
 from dotenv import load_dotenv
 
@@ -10,20 +9,20 @@ load_dotenv()
 class OpenAIClient:
     """Utility class for accessing different OpenAI LLM models."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """Initialize the OpenAI client."""
         self.client = OpenAI(api_key=api_key)
     
     def call(
         self, 
         model: str,
-        messages: List[Dict[str, str]], 
-        max_tokens: Optional[int] = None,
+        messages: list[dict[str, str]], 
+        max_tokens: int | None = None,
         temperature: float = 0.0,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        tool_choice: Optional[str] = None,
-        response_format: Optional[Dict[str, str]] = None,
-        system: Optional[str] = None
+        tools: list[dict[str, any]] | None = None,
+        tool_choice: str | None = None,
+        response_format: dict[str, str] | None = None,
+        system: str | None = None
     ) -> openai.types.chat.ChatCompletion:
         """
         General method for calling any OpenAI model.

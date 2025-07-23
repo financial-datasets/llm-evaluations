@@ -1,6 +1,5 @@
 from google import genai
 from google.genai import types
-from typing import List, Dict, Any, Optional
 import os
 from dotenv import load_dotenv
 
@@ -10,7 +9,7 @@ load_dotenv()
 class GeminiClient:
     """Utility class for accessing different Google Gemini LLM models."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """Initialize the Gemini client."""
         if api_key:
             self.client = genai.Client(api_key=api_key)
@@ -20,12 +19,12 @@ class GeminiClient:
     def call(
         self, 
         model: str,
-        messages: List[Dict[str, str]], 
-        max_tokens: Optional[int] = None,
+        messages: list[dict[str, str]], 
+        max_tokens: int | None = None,
         temperature: float = 0.0,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        system: Optional[str] = None
-    ) -> Any:
+        tools: list[dict[str, any]] | None = None,
+        system: str | None = None
+    ) -> any:
         """
         General method for calling any Gemini model.
         

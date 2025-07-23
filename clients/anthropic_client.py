@@ -1,5 +1,4 @@
 import anthropic
-from typing import List, Dict, Any, Optional
 import os
 from dotenv import load_dotenv
 
@@ -9,18 +8,18 @@ load_dotenv()
 class AnthropicClient:
     """Utility class for accessing different Anthropic LLM models."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """Initialize the Anthropic client."""
         self.client = anthropic.Anthropic(api_key=api_key)
     
     def call(
         self, 
         model: str,
-        messages: List[Dict[str, str]], 
+        messages: list[dict[str, str]], 
         max_tokens: int = 1024,
         temperature: float = 0.0,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        system: Optional[str] = None
+        tools: list[dict[str, any]] | None = None,
+        system: str | None = None
     ) -> anthropic.types.Message:
         """
         General method for calling any Anthropic model.
