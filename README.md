@@ -1,5 +1,6 @@
 # LLM Evaluations
-This project provides code to assess LLM performance, accuracy, and reliability on various financial research tasks. 
+
+A codebase for evaluating Large Language Models (LLMs) on financial research tasks. Contains tools and methodologies to assess LLM performance, accuracy, and reliability in financial analysis contexts. 
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/findatasets?style=social)](https://twitter.com/findatasets)
 
