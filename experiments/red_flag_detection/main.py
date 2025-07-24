@@ -1,15 +1,13 @@
-from data.cache import create_default_dataset, create_custom_limit_dataset
+from data.factory import create_dataset
 
 
 def main():
     """Load red flag and green flag companies dataset with JSON caching."""
     
-    print("=== Red Flag Detection Dataset with Custom Limits ===")
+    print("=== Red Flag Detection Dataset ===")
     
-    # Load dataset with custom limits per filter
-    # This will create 10 total red flag companies (2 each from 5 red flag filters)
-    # and 10 green flag companies
-    dataset = create_custom_limit_dataset()
+    # Load dataset using the simplified factory
+    dataset = create_dataset()
     
     # Display basic statistics
     print(f"Total companies: {dataset.size()}")

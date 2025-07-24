@@ -1,0 +1,96 @@
+{
+  "companies": [
+    {
+      "ticker": "UAL",
+      "label": "Financial Health Issues"
+    },
+    {
+      "ticker": "PEP",
+      "label": "Financial Health Issues"
+    },
+    {
+      "ticker": "ACI",
+      "label": "Financial Health Issues"
+    },
+    {
+      "ticker": "WBA",
+      "label": "Financial Health Issues"
+    },
+    {
+      "ticker": "KREF",
+      "label": "Declining Profitability"
+    },
+    {
+      "ticker": "MMLP",
+      "label": "Declining Profitability"
+    },
+    {
+      "ticker": "TSQ",
+      "label": "Earnings Decline"
+    },
+    {
+      "ticker": "HUBG",
+      "label": "Earnings Decline"
+    },
+    {
+      "ticker": "OPTT",
+      "label": "Inefficient Operations"
+    },
+    {
+      "ticker": "VFS",
+      "label": "Inefficient Operations"
+    },
+    {
+      "ticker": "ENPH",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "FAST",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "PNR",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "SNA",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "MSM",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "AZZ",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "FDS",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "AYI",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "CALM",
+      "label": "Green Flag"
+    },
+    {
+      "ticker": "WGO",
+      "label": "Green Flag"
+    }
+  ],
+  "metadata": {
+    "total_companies": 20,
+    "labels": [
+      "Inefficient Operations",
+      "Earnings Decline",
+      "Financial Health Issues",
+      "Green Flag",
+      "Declining Profitability"
+    ],
+    "red_flag_count": 10,
+    "green_flag_count": 10
+  }
+}
