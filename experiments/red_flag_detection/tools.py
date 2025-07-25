@@ -33,6 +33,31 @@ class RedFlagDetectionTool:
         }
     
     @staticmethod
+    def deepseek_tool_definition():
+        return {
+            "type": "function",
+            "function": {
+                "name": "red_flag_detection",
+                "description": "Determine if a company has financial red flags based on its financial metrics.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "has_red_flags": {
+                            "type": "boolean",
+                            "description": "True if the company has financial red flags"
+                        },
+                        "reasoning": {
+                            "type": "string",
+                            "description": "Explanation for the red flag judgment, referencing financial metrics"
+                        }
+                    },
+                    "required": ["has_red_flags", "reasoning"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    
+    @staticmethod
     def anthropic_tool_definition():
         return {
         "name": "red_flag_detection",
