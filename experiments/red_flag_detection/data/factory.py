@@ -14,7 +14,7 @@ def get_red_flag_companies(fd_client: FinancialDatasetsClient) -> list[dict[str,
                 {"field": "total_debt", "operator": "gt", "value": 2000000000}
             ],
             "label": "Financial Health Issues",
-            "limit": 4
+            "limit": 15
         },
         {
             "filters": [
@@ -23,7 +23,7 @@ def get_red_flag_companies(fd_client: FinancialDatasetsClient) -> list[dict[str,
                 {"field": "net_income", "operator": "lt", "value": 0}
             ],
             "label": "Declining Profitability",
-            "limit": 2
+            "limit": 15
         },
         {
             "filters": [
@@ -32,7 +32,7 @@ def get_red_flag_companies(fd_client: FinancialDatasetsClient) -> list[dict[str,
                 {"field": "revenue_growth", "operator": "lt", "value": 0}
             ],
             "label": "Earnings Decline",
-            "limit": 2
+            "limit": 10
         },
         {
             "filters": [
@@ -41,7 +41,7 @@ def get_red_flag_companies(fd_client: FinancialDatasetsClient) -> list[dict[str,
                 {"field": "asset_turnover", "operator": "lt", "value": 0.5}
             ],
             "label": "Inefficient Operations",
-            "limit": 2
+            "limit": 10
         }
     ]
     
@@ -70,7 +70,7 @@ def get_green_flag_companies(fd_client: FinancialDatasetsClient) -> list[dict[st
     green_flag_companies = fd_client.search(
         filters=green_flag_filters,
         label="Green Flag",
-        limit=10,
+        limit=50,
         period="ttm"
     )
     print(f"Found {len(green_flag_companies)} companies with label Green Flag")
