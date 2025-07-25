@@ -98,13 +98,20 @@ def create_dataset() -> RedFlagDetectionDataset:
     fd_client = FinancialDatasetsClient()
     all_companies = []
 
-    # Get red flag companies
+    # # Get red flag companies
+    print("Getting red flag companies...")
     red_flag_companies = get_red_flag_companies(fd_client)
     all_companies.extend(red_flag_companies)
 
     # Get green flag companies
+    print("Getting green flag companies...")
     green_flag_companies = get_green_flag_companies(fd_client)
     all_companies.extend(green_flag_companies)
+
+    # Get financial metrics for all companies
+    for company in all_companies:
+        financial_metrics = fd_client.get_financial_metrics(company.get("ticker"))
+        company["financial_metrics"] = financial_metrics
     
     # Combine the datasets and return
     dataset = RedFlagDetectionDataset(all_companies)
