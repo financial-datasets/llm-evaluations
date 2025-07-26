@@ -11,9 +11,10 @@ class KimiClient:
     
     def __init__(self):
         """Initialize the Kimi client."""
+        api_key = os.getenv("KIMI_API_KEY")
         self.client = OpenAI(
             api_key=os.getenv("KIMI_API_KEY"),
-            base_url="https://api.moonshot.cn/v1"
+            base_url="https://api.moonshot.ai/v1"
         )
     
     def call(
@@ -103,7 +104,7 @@ if __name__ == "__main__":
     ]
     
     completion = client.call(
-        model="kimi-k2-instruct",
+        model="kimi-k2-0711-preview",
         messages=messages,
         tools=tools
     )
