@@ -51,17 +51,17 @@ class RedFlagDetectionExperiment:
 
   def run(self, dataset: RedFlagDetectionDataset) -> ExperimentResults:
     # Get the companies from the dataset
-    companies = dataset.get_companies()[:2]
+    companies = dataset.get_companies()
 
     # Execute all LLM calls in parallel using ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=5) as executor:
         # Submit all tasks
         future_to_provider = {
-            # executor.submit(self._call_openai, companies): "openai",
-            # executor.submit(self._call_anthropic, companies): "anthropic", 
-            # executor.submit(self._call_gemini, companies): "gemini",
+            executor.submit(self._call_openai, companies): "openai",
+            executor.submit(self._call_anthropic, companies): "anthropic", 
+            executor.submit(self._call_gemini, companies): "gemini",
             executor.submit(self._call_kimi, companies): "kimi",
-            # executor.submit(self._call_deepseek, companies): "deepseek"
+            executor.submit(self._call_deepseek, companies): "deepseek"
         }
         
         # Collect results as they complete
