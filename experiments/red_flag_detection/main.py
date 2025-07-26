@@ -13,7 +13,6 @@ def main():
     
     # Display basic statistics
     print(f"Total companies: {dataset.size()}")
-    print(f"Available labels: {dataset.labels()}")
     print(f"Red flag companies: {len(dataset.get_red_flag_companies())}")
     print(f"Green flag companies: {len(dataset.get_green_flag_companies())}")
 
