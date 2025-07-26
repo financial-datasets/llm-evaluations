@@ -6,6 +6,8 @@ from typing import Optional
 from clients.anthropic_client import AnthropicClient
 from clients.openai_client import OpenAIClient
 from clients.gemini_client import GeminiClient
+from clients.kimi_client import KimiClient
+from clients.deepseek_client import DeepSeekClient
 from experiments.red_flag_detection.data.dataset import RedFlagDetectionDataset
 from experiments.red_flag_detection.data.factory import create_dataset
 from experiments.red_flag_detection.tools import RedFlagDetectionOutput, RedFlagDetectionTool
@@ -36,24 +38,30 @@ class ExperimentResults(BaseModel):
     openai: Optional[ModelResults] = None
     anthropic: Optional[ModelResults] = None
     gemini: Optional[ModelResults] = None
+    kimi: Optional[ModelResults] = None
+    deepseek: Optional[ModelResults] = None
 
 class RedFlagDetectionExperiment:
   def __init__(self):
     self.anthropic_client = AnthropicClient()
     self.openai_client = OpenAIClient()
     self.gemini_client = GeminiClient()
+    self.kimi_client = KimiClient()
+    self.deepseek_client = DeepSeekClient()
 
   def run(self, dataset: RedFlagDetectionDataset) -> ExperimentResults:
     # Get the companies from the dataset
-    companies = dataset.get_companies()[:3]
+    companies = dataset.get_companies()[:2]
 
     # Execute all LLM calls in parallel using ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         # Submit all tasks
         future_to_provider = {
-            executor.submit(self._call_openai, companies): "openai",
-            executor.submit(self._call_anthropic, companies): "anthropic", 
-            executor.submit(self._call_gemini, companies): "gemini"
+            # executor.submit(self._call_openai, companies): "openai",
+            # executor.submit(self._call_anthropic, companies): "anthropic", 
+            # executor.submit(self._call_gemini, companies): "gemini",
+            executor.submit(self._call_kimi, companies): "kimi",
+            # executor.submit(self._call_deepseek, companies): "deepseek"
         }
         
         # Collect results as they complete
@@ -71,7 +79,9 @@ class RedFlagDetectionExperiment:
     return ExperimentResults(
         openai=results.get("openai"),
         anthropic=results.get("anthropic"),
-        gemini=results.get("gemini")
+        gemini=results.get("gemini"),
+        kimi=results.get("kimi"),
+        deepseek=results.get("deepseek")
     )
 
   def _generate_prompt(self, ticker: str, metrics: dict) -> list[dict]:
@@ -321,6 +331,158 @@ class RedFlagDetectionExperiment:
 
     return ModelResults(
         model_provider="gemini", 
+        model_name=model, 
+        predictions=predictions,
+        average_cost=total_cost / len(predictions) if predictions else 0,
+        average_duration=total_time / len(predictions) if predictions else 0
+    )
+
+  def _call_kimi(self, companies: list[dict]) -> ModelResults:
+    predictions = []
+    model = "kimi-k2-0711-preview"
+    input_cost_per_million_tokens = 1.00  # Estimated pricing
+    output_cost_per_million_tokens = 3.00  # Estimated pricing
+    total_cost = 0.0
+    total_time = 0.0
+    
+    print(f"\n🌙 Kimi: Processing {len(companies)} companies...")
+
+    for i, company in enumerate(companies, 1):
+        ticker = company["ticker"]
+        metrics = company["financial_metrics"]
+        print(f"  Kimi ({i}/{len(companies)}): {ticker}")
+
+        messages = self._generate_prompt(ticker, metrics)
+
+        try:
+            # Start timing the API call
+            start_time = time.time()
+            
+            response = self.kimi_client.call(
+                model=model,
+                messages=messages,
+                tools=[RedFlagDetectionTool.kimi_tool_definition()],
+                tool_choice={"type": "function", "function": {"name": "red_flag_detection"}}
+            )
+            
+            # End timing the API call
+            end_time = time.time()
+            call_duration = end_time - start_time
+            total_time += call_duration
+
+            # Calculate cost from usage
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            
+            input_cost = (prompt_tokens / 1_000_000) * input_cost_per_million_tokens
+            output_cost = (completion_tokens / 1_000_000) * output_cost_per_million_tokens
+            call_cost = input_cost + output_cost
+            total_cost += call_cost
+
+            # Parse the tool call (OpenAI-style response)
+            tool_calls = response.choices[0].message.tool_calls
+            if not tool_calls:
+                print(f"No tool call returned for {ticker}")
+                continue
+
+            args = json.loads(tool_calls[0].function.arguments)
+            parsed = RedFlagDetectionOutput(**args)
+
+            predictions.append(LLMPredictionResult(
+                ticker=ticker,
+                model=model,
+                ground_truth=company.get("label") != "Green Flag",
+                ground_truth_label=company.get("label"),
+                prediction=parsed.has_red_flags,
+                reasoning=parsed.reasoning,
+                cost=call_cost,
+                duration=call_duration,
+            ))
+
+            # Add sleep to avoid rate limiting
+            time.sleep(1)
+
+        except Exception as e:
+            print(f"Error processing {ticker} with Kimi: {e}")
+
+    return ModelResults(
+        model_provider="kimi", 
+        model_name=model, 
+        predictions=predictions,
+        average_cost=total_cost / len(predictions) if predictions else 0,
+        average_duration=total_time / len(predictions) if predictions else 0
+    )
+
+  def _call_deepseek(self, companies: list[dict]) -> ModelResults:
+    predictions = []
+    model = "deepseek-chat"
+    input_cost_per_million_tokens = 0.14  # Estimated pricing based on DeepSeek's competitive rates
+    output_cost_per_million_tokens = 0.28  # Estimated pricing
+    total_cost = 0.0
+    total_time = 0.0
+    
+    print(f"\n🔍 DeepSeek: Processing {len(companies)} companies...")
+
+    for i, company in enumerate(companies, 1):
+        ticker = company["ticker"]
+        metrics = company["financial_metrics"]
+        print(f"  DeepSeek ({i}/{len(companies)}): {ticker}")
+
+        messages = self._generate_prompt(ticker, metrics)
+
+        try:
+            # Start timing the API call
+            start_time = time.time()
+            
+            response = self.deepseek_client.call(
+                model=model,
+                messages=messages,
+                tools=[RedFlagDetectionTool.deepseek_tool_definition()],
+                tool_choice={"type": "function", "function": {"name": "red_flag_detection"}}
+            )
+            
+            # End timing the API call
+            end_time = time.time()
+            call_duration = end_time - start_time
+            total_time += call_duration
+
+            # Calculate cost from usage
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            
+            input_cost = (prompt_tokens / 1_000_000) * input_cost_per_million_tokens
+            output_cost = (completion_tokens / 1_000_000) * output_cost_per_million_tokens
+            call_cost = input_cost + output_cost
+            total_cost += call_cost
+
+            # Parse the tool call (OpenAI-style response)
+            tool_calls = response.choices[0].message.tool_calls
+            if not tool_calls:
+                print(f"No tool call returned for {ticker}")
+                continue
+
+            args = json.loads(tool_calls[0].function.arguments)
+            parsed = RedFlagDetectionOutput(**args)
+
+            predictions.append(LLMPredictionResult(
+                ticker=ticker,
+                model=model,
+                ground_truth=company.get("label") != "Green Flag",
+                ground_truth_label=company.get("label"),
+                prediction=parsed.has_red_flags,
+                reasoning=parsed.reasoning,
+                cost=call_cost,
+                duration=call_duration,
+            ))
+
+            # Add sleep to avoid rate limiting
+            time.sleep(1)
+
+        except Exception as e:
+            print(f"Error processing {ticker} with DeepSeek: {e}")
+
+    return ModelResults(
+        model_provider="deepseek", 
         model_name=model, 
         predictions=predictions,
         average_cost=total_cost / len(predictions) if predictions else 0,
