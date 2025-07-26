@@ -101,7 +101,7 @@ class RedFlagDetectionExperiment:
 
   def _call_openai(self, companies: list[dict]) -> ModelResults:
     predictions = []
-    model = "gpt-4o"
+    model = "o3"
     input_cost_per_million_tokens = 2.50
     output_cost_per_million_tokens = 10.00
     total_cost = 0.0
@@ -178,7 +178,7 @@ class RedFlagDetectionExperiment:
   
   def _call_anthropic(self, companies: list[dict]) -> ModelResults:
     predictions = []
-    model = "claude-sonnet-4-20250514"
+    model = "claude-opus-4-20250514"
     input_cost_per_million_tokens = 3.00
     output_cost_per_million_tokens = 15.00
     total_cost = 0.0
@@ -415,7 +415,7 @@ class RedFlagDetectionExperiment:
 
   def _call_deepseek(self, companies: list[dict]) -> ModelResults:
     predictions = []
-    model = "deepseek-chat"
+    model = "deepseek-reasoner"
     input_cost_per_million_tokens = 0.14  # Estimated pricing based on DeepSeek's competitive rates
     output_cost_per_million_tokens = 0.28  # Estimated pricing
     total_cost = 0.0
@@ -437,8 +437,7 @@ class RedFlagDetectionExperiment:
             response = self.deepseek_client.call(
                 model=model,
                 messages=messages,
-                tools=[RedFlagDetectionTool.deepseek_tool_definition()],
-                tool_choice={"type": "function", "function": {"name": "red_flag_detection"}}
+                tools=[RedFlagDetectionTool.deepseek_tool_definition()]
             )
             
             # End timing the API call

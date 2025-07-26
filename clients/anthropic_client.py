@@ -17,7 +17,7 @@ class AnthropicClient:
         model: str,
         messages: list[dict[str, str]], 
         max_tokens: int = 1024,
-        temperature: float = 0.0,
+        temperature: float = 1.0,
         tools: list[dict[str, any]] | None = None,
         system: str | None = None
     ) -> anthropic.types.Message:

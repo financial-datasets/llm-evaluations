@@ -21,7 +21,7 @@ class GeminiClient:
         model: str,
         messages: list[dict[str, str]], 
         max_tokens: int | None = None,
-        temperature: float = 0.0,
+        temperature: float = 1.0,
         tools: list[dict[str, any]] | None = None,
         system: str | None = None
     ) -> any:

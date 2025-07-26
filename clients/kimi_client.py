@@ -21,7 +21,7 @@ class KimiClient:
         model: str = "kimi-k2-0711-preview",
         messages: list[dict[str, str]] = None, 
         max_tokens: int | None = None,
-        temperature: float = 0.6,  # Recommended temperature for Kimi K2
+        temperature: float = 1.0,  # Recommended temperature for Kimi K2
         tools: list[dict[str, any]] | None = None,
         tool_choice: str | None = None,
         response_format: dict[str, str] | None = None,
@@ -31,7 +31,7 @@ class KimiClient:
         General method for calling Kimi K2 models.
         
         Args:
-            model: Model name (defaults to "kimi-k2-instruct")
+            model: Model name (defaults to "kimi-k2-0711-preview")
             messages: List of message dictionaries
             max_tokens: Maximum tokens to generate (None for model default)
             temperature: Temperature for randomness (0.6 recommended for Kimi K2)

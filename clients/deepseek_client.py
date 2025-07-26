@@ -21,7 +21,7 @@ class DeepSeekClient:
         model: str = "deepseek-reasoner",
         messages: list[dict[str, str]] = None, 
         max_tokens: int | None = None,
-        temperature: float = 0.0,
+        temperature: float = 1.0,
         tools: list[dict[str, any]] | None = None,
         tool_choice: str | None = None,
         response_format: dict[str, str] | None = None,
@@ -31,7 +31,7 @@ class DeepSeekClient:
         General method for calling DeepSeek models.
         
         Args:
-            model: Model name (defaults to "deepseek-chat")
+            model: Model name (defaults to "deepseek-reasoner")
             messages: List of message dictionaries
             max_tokens: Maximum tokens to generate (None for model default)
             temperature: Temperature for randomness (0.0-2.0)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     messages = [{"role": "user", "content": "What is the weather like in Paris today?"}]
     
     completion = client.call(
-        model="deepseek-chat",
+        model="deepseek-reasoner",
         messages=messages,
         tools=tools
     )
