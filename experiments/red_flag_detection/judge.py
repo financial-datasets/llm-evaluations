@@ -26,6 +26,8 @@ class ComparisonResults(BaseModel):
     openai: Optional[ModelEvaluationMetrics] = None
     anthropic: Optional[ModelEvaluationMetrics] = None
     gemini: Optional[ModelEvaluationMetrics] = None
+    kimi: Optional[ModelEvaluationMetrics] = None
+    deepseek: Optional[ModelEvaluationMetrics] = None
     best_accuracy_model: Optional[str] = None
     best_f1_model: Optional[str] = None
 
@@ -45,6 +47,12 @@ class RedFlagDetectionJudge:
             
         if results.gemini:
             evaluation_results.gemini = self._evaluate_model(results.gemini)
+        
+        if results.kimi:
+            evaluation_results.kimi = self._evaluate_model(results.kimi)
+        
+        if results.deepseek:
+            evaluation_results.deepseek = self._evaluate_model(results.deepseek)
         
         # Find best performing models
         evaluation_results.best_accuracy_model = self._find_best_model_by_metric(
@@ -102,6 +110,10 @@ class RedFlagDetectionJudge:
             models.append(("anthropic", getattr(results.anthropic, metric)))
         if results.gemini:
             models.append(("gemini", getattr(results.gemini, metric)))
+        if results.kimi:
+            models.append(("kimi", getattr(results.kimi, metric)))
+        if results.deepseek:
+            models.append(("deepseek", getattr(results.deepseek, metric)))
         
         if not models:
             return None
@@ -119,7 +131,9 @@ class RedFlagDetectionJudge:
         models = [
             ("OpenAI", results.openai),
             ("Anthropic", results.anthropic), 
-            ("Gemini", results.gemini)
+            ("Gemini", results.gemini),
+            ("Kimi", results.kimi),
+            ("DeepSeek", results.deepseek)
         ]
         
         for provider_name, metrics in models:

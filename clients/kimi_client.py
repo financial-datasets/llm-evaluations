@@ -11,7 +11,6 @@ class KimiClient:
     
     def __init__(self):
         """Initialize the Kimi client."""
-        api_key = os.getenv("KIMI_API_KEY")
         self.client = OpenAI(
             api_key=os.getenv("KIMI_API_KEY"),
             base_url="https://api.moonshot.ai/v1"
