@@ -9,10 +9,10 @@ load_dotenv()
 class KimiClient:
     """Utility class for accessing Kimi K2 models from MoonShot AI."""
     
-    def __init__(self, api_key: str | None = None):
+    def __init__(self):
         """Initialize the Kimi client."""
         self.client = OpenAI(
-            api_key=api_key,
+            api_key=os.getenv("KIMI_API_KEY"),
             base_url="https://api.moonshot.cn/v1"
         )
     
