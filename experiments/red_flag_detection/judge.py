@@ -1,35 +1,4 @@
-from pydantic import BaseModel
-from typing import Optional
-from experiments.red_flag_detection.experiment import ExperimentResults, ModelResults, LLMPredictionResult
-
-
-class ModelEvaluationMetrics(BaseModel):
-    """Evaluation metrics for a single model."""
-    model_provider: str
-    model_name: str
-    total_predictions: int
-    correct_predictions: int
-    accuracy: float
-    precision: float
-    recall: float
-    f1_score: float
-    true_positives: int
-    false_positives: int
-    true_negatives: int
-    false_negatives: int
-    average_cost: float
-    average_duration: float
-
-
-class ComparisonResults(BaseModel):
-    """Complete evaluation results comparing all models."""
-    openai: Optional[ModelEvaluationMetrics] = None
-    anthropic: Optional[ModelEvaluationMetrics] = None
-    gemini: Optional[ModelEvaluationMetrics] = None
-    kimi: Optional[ModelEvaluationMetrics] = None
-    deepseek: Optional[ModelEvaluationMetrics] = None
-    best_accuracy_model: Optional[str] = None
-    best_f1_model: Optional[str] = None
+from experiments.common.models import ExperimentResults, ModelResults, ModelEvaluationMetrics, ComparisonResults
 
 
 class RedFlagDetectionJudge:
@@ -100,7 +69,7 @@ class RedFlagDetectionJudge:
             average_duration=model_results.average_duration
         )
 
-    def _find_best_model_by_metric(self, results: ComparisonResults, metric: str) -> Optional[str]:
+    def _find_best_model_by_metric(self, results: ComparisonResults, metric: str) -> str | None:
         """Find the model with the best performance for a given metric."""
         models = []
         
