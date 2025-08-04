@@ -26,11 +26,21 @@ def main():
     # # Pretty print the ComparisonResults
     print(evaluation_results.model_dump_json(indent=2))
 
-    # # Save the results to a JSON file with timestamp
+    # Save the results to JSON files with timestamp
     current_dir = os.path.dirname(__file__)
-    json_filepath = os.path.join(current_dir, f"financials_calculation_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
-    with open(json_filepath, "w") as f:
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # Save evaluation metrics (aggregated results)
+    metrics_filepath = os.path.join(current_dir, f"financials_calculation_results_{timestamp}.json")
+    with open(metrics_filepath, "w") as f:
         f.write(evaluation_results.model_dump_json(indent=2))
+    print(f"📊 Evaluation metrics saved to: {metrics_filepath}")
+    
+    # Save raw predictions for manual validation
+    predictions_filepath = os.path.join(current_dir, f"financials_calculation_predictions_{timestamp}.json")
+    with open(predictions_filepath, "w") as f:
+        f.write(results.model_dump_json(indent=2))
+    print(f"🔍 Raw predictions saved to: {predictions_filepath}")
 
 if __name__ == "__main__":
     main()
